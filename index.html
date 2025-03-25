@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Vendas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="loginPage" class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-center">Login</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">E-mail</label>
+                                <input type="email" class="form-control" id="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Senha</label>
+                                <input type="password" class="form-control" id="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainPage" class="container-fluid d-none">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Sistema de Vendas</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-page="pdv">PDV</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-page="estoque">Controle de Estoque</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-page="control">Controle</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-page="admin">Administração</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <span class="nav-link" id="usuarioInfo"></span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="logoutBtn">Sair</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div id="pdvPage" class="container mt-4 d-none">
+            <h2>PDV - Ponto de Venda</h2>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="produtoCodigo" placeholder="Código do Produto">
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Código</th>
+                                            <th>Produto</th>
+                                            <th>Quantidade</th>
+                                            <th>Preço Unit.</th>
+                                            <th>Total</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="carrinhoItens"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Total da Venda</h5>
+                            <h3 id="totalVenda">R$ 0,00</h3>
+                            <div class="mb-3">
+                                <label for="moedaDestino" class="form-label">Converter para:</label>
+                                <select class="form-select" id="moedaDestino">
+                                    <option value="USD">Dólar Americano (USD)</option>
+                                    <option value="EUR">Euro (EUR)</option>
+                                    <option value="GBP">Libra Esterlina (GBP)</option>
+                                    <option value="JPY">Iene Japonês (JPY)</option>
+                                    <option value="CNY">Yuan Chinês (CNY)</option>
+                                </select>
+                            </div>
+                            <h4 id="totalConvertido" class="text-primary">Total Convertido: R$ 0,00</h4>
+                            <button class="btn btn-success w-100" id="finalizarVenda">Finalizar Venda</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="estoquePage" class="container mt-4 d-none">
+            <h2>Controle de Estoque</h2>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#produtoModal">
+                        <i class="bi bi-plus-circle"></i> Novo Produto
+                    </button>
+                    <button class="btn btn-success ms-2" onclick="exportarEstoque()">
+                        <i class="bi bi-file-earmark-excel"></i> Exportar Estoque
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="buscaProduto" placeholder="Buscar por código, nome ou marca...">
+                        <button class="btn btn-primary" onclick="buscarProduto()">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Lista de Produtos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Produto</th>
+                                    <th>Marca</th>
+                                    <th>Modelo</th>
+                                    <th>Estoque</th>
+                                    <th>Preço Custo</th>
+                                    <th>Lucro (%)</th>
+                                    <th>Preço Venda</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="estoqueItens"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Produto -->
+        <div class="modal fade" id="produtoModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Novo Produto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="produtoForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="codigoBarras" class="form-label">Código de Barras</label>
+                                        <input type="text" class="form-control" id="codigoBarras" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="nomeProduto" class="form-label">Nome do Produto</label>
+                                        <input type="text" class="form-control" id="nomeProduto" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="marcaProduto" class="form-label">Marca</label>
+                                        <input type="text" class="form-control" id="marcaProduto" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="modeloProduto" class="form-label">Modelo</label>
+                                        <input type="text" class="form-control" id="modeloProduto" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="composicaoProduto" class="form-label">Composição</label>
+                                <textarea class="form-control" id="composicaoProduto" rows="3"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="precoCusto" class="form-label">Preço de Custo</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">R$</span>
+                                            <input type="number" class="form-control" id="precoCusto" step="0.01" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="porcentagemLucro" class="form-label">Porcentagem de Lucro (%)</label>
+                                        <input type="number" class="form-control" id="porcentagemLucro" step="0.01" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="precoVenda" class="form-label">Preço de Venda</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">R$</span>
+                                            <input type="number" class="form-control" id="precoVenda" step="0.01" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="quantidadeEstoque" class="form-label">Quantidade em Estoque</label>
+                                        <input type="number" class="form-control" id="quantidadeEstoque" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="quantidadeMinima" class="form-label">Quantidade Mínima</label>
+                                        <input type="number" class="form-control" id="quantidadeMinima" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" onclick="salvarProduto()">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="adminPage" class="container mt-4 d-none">
+            <h2>Painel de Administração</h2>
+            <div class="row">
+                <div class="col-md-12 mb-4">
+                    <div class="admin-stats">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h3>Total de Vendas</h3>
+                                <h4 id="totalVendas">R$ 0,00</h4>
+                            </div>
+                            <div class="col-md-3">
+                                <h3>Impostos Arrecadados</h3>
+                                <h4 id="totalImpostos">R$ 0,00</h4>
+                            </div>
+                            <div class="col-md-3">
+                                <h3>Produtos em Baixa</h3>
+                                <h4 id="produtosBaixa">0</h4>
+                            </div>
+                            <div class="col-md-3">
+                                <h3>Usuários Ativos</h3>
+                                <h4 id="usuariosAtivos">0</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card admin-card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Configurações de Impostos</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="impostosForm">
+                                <div class="mb-3">
+                                    <label for="icms" class="form-label">ICMS (%)</label>
+                                    <input type="number" class="form-control" id="icms" value="18" step="0.01" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="pis" class="form-label">PIS (%)</label>
+                                    <input type="number" class="form-control" id="pis" value="1.65" step="0.01" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="cofins" class="form-label">COFINS (%)</label>
+                                    <input type="number" class="form-control" id="cofins" value="7.6" step="0.01" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="iss" class="form-label">ISS (%)</label>
+                                    <input type="number" class="form-control" id="iss" value="5" step="0.01" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Salvar Impostos</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card admin-card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Relatórios</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Período</label>
+                                <div class="input-group">
+                                    <input type="date" class="form-control" id="dataInicio">
+                                    <span class="input-group-text">até</span>
+                                    <input type="date" class="form-control" id="dataFim">
+                                </div>
+                            </div>
+                            <button class="btn btn-primary me-2" onclick="gerarRelatorioVendas()">Relatório de Vendas</button>
+                            <button class="btn btn-primary me-2" onclick="gerarRelatorioImpostos()">Relatório de Impostos</button>
+                            <button class="btn btn-primary" onclick="gerarRelatorioEstoque()">Relatório de Estoque</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card admin-card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Gerenciar Usuários</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="novoUsuarioForm">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="nomeUsuario" class="form-label">Nome</label>
+                                            <input type="text" class="form-control" id="nomeUsuario" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="emailUsuario" class="form-label">E-mail</label>
+                                            <input type="email" class="form-control" id="emailUsuario" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="telefoneUsuario" class="form-label">Telefone</label>
+                                            <input type="tel" class="form-control" id="telefoneUsuario" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="senhaUsuario" class="form-label">Senha</label>
+                                            <input type="password" class="form-control" id="senhaUsuario" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Permissões</label>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="permissaoPDV" checked>
+                                                <label class="form-check-label" for="permissaoPDV">PDV</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="permissaoEstoque" checked>
+                                                <label class="form-check-label" for="permissaoEstoque">Estoque</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="permissaoAdmin">
+                                                <label class="form-check-label" for="permissaoAdmin">Administração</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Adicionar Usuário</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/pdv.js"></script>
+    <script src="js/estoque.js"></script>
+    <script src="js/conversor.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/impostos.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 
